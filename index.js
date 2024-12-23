@@ -1,7 +1,10 @@
+const cors = require("cors");
 const express = require("express");
-const path = require("path");
+
 const app = express();
 const PORT = 3500;
+
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("Hi");
