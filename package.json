@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "dev:build": "tsc --watch",
-    "dev:start": "node --watch dist"
+    "dev:start": "node --watch dist",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix"
   },
   "keywords": [],
   "author": "Sadia Iffat Jahan",
@@ -17,10 +19,18 @@
     "mongoose": "^8.9.3"
   },
   "devDependencies": {
+    "@eslint/js": "^9.17.0",
     "@types/cors": "^2.8.17",
+    "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.0",
     "@types/mongoose": "^5.11.96",
     "@types/node": "^22.10.2",
-    "typescript": "^5.7.2"
+    "dotenv": "^16.4.7",
+    "eslint": "^9.17.0",
+    "eslint-import-resolver-typescript": "^3.7.0",
+    "eslint-plugin-import": "^2.31.0",
+    "globals": "^15.14.0",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.19.0"
   }
 }
