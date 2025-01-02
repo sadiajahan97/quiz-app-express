@@ -2,10 +2,10 @@ import { Request, Response } from "express";
 
 import { MultipleChoiceQuestionModel } from "@quiz-app/models/multiple-choice-question";
 
-export const postMultipleChoiceQuestion = async (
+export async function postMultipleChoiceQuestion(
   request: Request,
   response: Response
-) => {
+) {
   try {
     const { answer, category, id, options, question, userId } = request.body;
     const multipleChoiceQuestion = new MultipleChoiceQuestionModel({
@@ -32,4 +32,4 @@ export const postMultipleChoiceQuestion = async (
       success: false,
     });
   }
-};
+}

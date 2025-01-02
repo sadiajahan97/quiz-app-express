@@ -2,10 +2,10 @@ import { Request, Response } from "express";
 
 import { TrueFalseQuestionModel } from "@quiz-app/models/true-false-question";
 
-export const postTrueFalseQuestion = async (
+export async function postTrueFalseQuestion(
   request: Request,
   response: Response
-) => {
+) {
   try {
     const { answer, category, id, question, userId } = request.body;
     const trueFalseQuestion = new TrueFalseQuestionModel({
@@ -31,4 +31,4 @@ export const postTrueFalseQuestion = async (
       success: false,
     });
   }
-};
+}
