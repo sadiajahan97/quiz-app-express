@@ -1,14 +1,24 @@
 import bcrypt from "bcrypt";
 
-export async function comparePassword(
+export async function comparePasswords(
   rawPassword: string,
   hashedPassword: string
 ) {
-  const isMatch = await bcrypt.compare(rawPassword, hashedPassword);
-  return isMatch;
+  try {
+    const isMatch = await bcrypt.compare(rawPassword, hashedPassword);
+    return isMatch;
+  } catch (error) {
+    console.error("Error comparing passwords:", error);
+    throw new Error("Password comparison failed.");
+  }
 }
 
 export async function hashPassword(rawPassword: string) {
-  const hashedPassword = await bcrypt.hash(rawPassword, 10);
-  return hashedPassword;
+  try {
+    const hashedPassword = await bcrypt.hash(rawPassword, 10);
+    return hashedPassword;
+  } catch (error) {
+    console.error("Error hashing password:", error);
+    throw new Error("Password hashing failed.");
+  }
 }
