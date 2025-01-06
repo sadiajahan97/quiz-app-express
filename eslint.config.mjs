@@ -28,6 +28,13 @@ export default [
           "newlines-between": "always",
         },
       ],
+      "sort-imports": [
+        "error",
+        {
+          ignoreDeclarationSort: true,
+          ignoreMemberSort: false,
+        },
+      ],
       "sort-keys": [
         "error",
         "asc",
