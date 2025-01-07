@@ -1,41 +1,45 @@
 {
-  "name": "quiz-app-express",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "dev:build": "tsc --watch",
-    "dev:start": "node --watch dist",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix"
+  "_moduleAliases": {
+    "@quiz-app": "dist"
   },
-  "keywords": [],
   "author": "Sadia Iffat Jahan",
-  "license": "ISC",
-  "type": "commonjs",
-  "description": "",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "module-alias": "^2.2.3",
     "mongoose": "^8.9.3",
     "zod": "^3.24.1"
   },
+  "description": "",
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
-    "@types/dotenv": "^6.1.1",
+    "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
-    "@types/mongoose": "^5.11.96",
-    "@types/node": "^22.10.2",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^22.10.5",
     "dotenv": "^16.4.7",
     "eslint": "^9.17.0",
     "eslint-import-resolver-typescript": "^3.7.0",
     "eslint-plugin-import": "^2.31.0",
     "globals": "^15.14.0",
     "typescript": "^5.7.2",
-    "typescript-eslint": "^8.19.0"
-  }
+    "typescript-eslint": "^8.19.1"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "quiz-app-express",
+  "scripts": {
+    "dev:build": "tsc --watch",
+    "dev:start": "node --watch dist",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix"
+  },
+  "type": "commonjs",
+  "version": "1.0.0"
 }
