@@ -2,11 +2,13 @@ import { Document, Schema, model } from "mongoose";
 import { z } from "zod";
 
 interface IUser extends Document {
-  displayPicture?: string;
+  createdAt?: Date;
+  displayPicture?: string | null;
   email: string;
   hashedPassword: string;
-  hashedRefreshToken?: string;
+  hashedRefreshToken?: string | null;
   name: string;
+  updatedAt?: Date;
 }
 
 const userMongooseSchema = new Schema<IUser>(
@@ -16,7 +18,7 @@ const userMongooseSchema = new Schema<IUser>(
       type: String,
       validate: {
         message: "Display picture must be a valid URL.",
-        validator: (value: string | null) =>
+        validator: (value: string | null): boolean =>
           value === null || /^https?:\/\/[^\s]+$/.test(value),
       },
     },
@@ -28,7 +30,7 @@ const userMongooseSchema = new Schema<IUser>(
       unique: true,
       validate: {
         message: "Email format is invalid.",
-        validator: function (value: string) {
+        validator: function (value: string): boolean {
           return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
         },
       },
@@ -43,7 +45,7 @@ const userMongooseSchema = new Schema<IUser>(
       type: String,
       validate: {
         message: "Refresh token must be at least 60 characters long.",
-        validator: (value: string | null) =>
+        validator: (value: string | null): boolean =>
           value === null || (typeof value === "string" && value.length >= 60),
       },
     },

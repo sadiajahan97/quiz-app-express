@@ -8,7 +8,12 @@ interface TokenPayload {
   id: string;
 }
 
-export function createTokens(email: string, id: string) {
+interface Tokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export function createTokens(email: string, id: string): Tokens {
   if (!process.env.ACCESS_TOKEN_SECRET || !process.env.REFRESH_TOKEN_SECRET) {
     throw new Error("Environment variables for token secrets are not set.");
   }

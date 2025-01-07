@@ -11,6 +11,7 @@ export default [
       eslintImport,
     },
     rules: {
+      "@typescript-eslint/explicit-function-return-type": "error",
       "eslintImport/order": [
         "error",
         {
