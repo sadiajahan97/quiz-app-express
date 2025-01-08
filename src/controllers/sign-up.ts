@@ -27,7 +27,7 @@ export async function handleSignUp(
     const hashedPassword = await hashData(password);
 
     const newUser = new User({
-      displayPicture: displayPicture || null,
+      displayPicture: displayPicture || "",
       email,
       hashedPassword,
       name,
@@ -36,7 +36,7 @@ export async function handleSignUp(
     await newUser.save();
 
     return response.status(201).json({
-      message: "User registered successfully",
+      message: "User signed up successfully",
       statusCode: 201,
       success: true,
     });

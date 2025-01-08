@@ -42,20 +42,21 @@ export async function handleSignIn(
 
     const hashedRefreshToken = await hashData(refreshToken);
 
-    await User.findOneAndUpdate({ email }, { hashedRefreshToken });
+    user.hashedRefreshToken = hashedRefreshToken;
 
-    response.cookie("jsonwebtoken", refreshToken, {
+    await user.save();
+
+    response.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
-      sameSite: "none",
-      secure: true,
+      signed: true,
     });
 
     return response.status(200).json({
       data: {
         accessToken,
       },
-      message: "User logged in successfully",
+      message: "User signed in successfully",
       statusCode: 200,
       success: true,
     });
