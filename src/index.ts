@@ -6,6 +6,7 @@ import express, { json, urlencoded } from "express";
 import { connect } from "mongoose";
 
 import { corsOptions } from "./config/cors";
+import { editUserRouter } from "./routes/edit-user";
 import { signInRouter } from "./routes/sign-in";
 import { signOutRouter } from "./routes/sign-out";
 import { signUpRouter } from "./routes/sign-up";
@@ -38,6 +39,7 @@ connect(DATABASE_URL)
     process.exit(1);
   });
 
+app.use("/account", editUserRouter);
 app.use("/sign-in", signInRouter);
 app.use("/sign-out", signOutRouter);
 app.use("/sign-up", signUpRouter);

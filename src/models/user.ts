@@ -70,15 +70,16 @@ export const userZodSchema = z
       .string()
       .nonempty("Email is required.")
       .email("Email format is invalid."),
-    name: z.string().nonempty("Name is required."),
+    name: z
+      .string()
+      .trim()
+      .nonempty("Name is required.")
+      .max(100, "Name is too long."),
     password: z
       .string()
       .nonempty("Password is required.")
-      .refine(
-        (value) =>
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
-            value
-          ),
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
         {
           message:
             "Password must be at least 8 characters long and include one uppercase letter, one lowercase letter, one number, and one special character.",
