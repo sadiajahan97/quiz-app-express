@@ -2,12 +2,12 @@ import { Request, Response } from "express";
 import { isValidObjectId } from "mongoose";
 import { z } from "zod";
 
-import { editUserZodSchema } from "@quiz-app/models/edit-user";
 import { User } from "@quiz-app/models/user";
 import { hashData } from "@quiz-app/utils/bcrypt";
+import { editUserSchema } from "@quiz-app/validators/edit-user";
 
 export async function handleEditUser(
-  request: Request<{ id: string }, unknown, z.infer<typeof editUserZodSchema>>,
+  request: Request<{ id: string }, unknown, z.infer<typeof editUserSchema>>,
   response: Response
 ): Promise<Response> {
   try {
@@ -21,7 +21,7 @@ export async function handleEditUser(
       });
     }
 
-    const validatedData = editUserZodSchema.parse(request.body);
+    const validatedData = editUserSchema.parse(request.body);
 
     if (Object.keys(validatedData).length === 0) {
       return response.status(400).json({

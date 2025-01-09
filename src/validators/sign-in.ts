@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const authZodSchema = z.object({
+export const signInSchema = z.object({
   email: z
     .string()
     .nonempty("Email is required.")

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const editUserZodSchema = z
+export const editUserSchema = z
   .object({
     displayPicture: z
       .string()

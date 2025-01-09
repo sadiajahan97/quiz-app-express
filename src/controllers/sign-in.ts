@@ -1,17 +1,17 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { authZodSchema } from "@quiz-app/models/auth";
 import { User } from "@quiz-app/models/user";
 import { compareData, hashData } from "@quiz-app/utils/bcrypt";
 import { createTokens } from "@quiz-app/utils/jsonwebtoken";
+import { signInSchema } from "@quiz-app/validators/sign-in";
 
 export async function handleSignIn(
-  request: Request<unknown, unknown, z.infer<typeof authZodSchema>>,
+  request: Request<unknown, unknown, z.infer<typeof signInSchema>>,
   response: Response
 ): Promise<Response> {
   try {
-    const validatedData = authZodSchema.parse(request.body);
+    const validatedData = signInSchema.parse(request.body);
 
     const { email, password } = validatedData;
 
