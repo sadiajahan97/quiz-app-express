@@ -19,9 +19,9 @@ export async function handleSignIn(
 
     if (!user || !user.hashedPassword) {
       return response.status(401).json({
-        message: "Invalid email or password",
-        statusCode: 401,
-        success: false,
+        data: null,
+        error: "Invalid email or password",
+        status: 401,
       });
     }
 
@@ -29,9 +29,9 @@ export async function handleSignIn(
 
     if (!isMatch) {
       return response.status(401).json({
-        message: "Invalid email or password",
-        statusCode: 401,
-        success: false,
+        data: null,
+        error: "Invalid email or password",
+        status: 401,
       });
     }
 
@@ -56,26 +56,30 @@ export async function handleSignIn(
       data: {
         accessToken,
       },
-      message: "User signed in successfully",
-      statusCode: 200,
-      success: true,
+      error: null,
+      status: 200,
     });
   } catch (error) {
-    console.error("Sign-in error:", error);
-
     if (error instanceof z.ZodError) {
+      const validationError: Record<string, string> = {};
+
+      for (const err of error.errors) {
+        const path = err.path.join(".");
+
+        validationError[path] = err.message;
+      }
+
       return response.status(400).json({
-        errors: error.errors,
-        message: "Validation failed",
-        statusCode: 400,
-        success: false,
+        data: null,
+        error: validationError,
+        status: 400,
       });
     }
 
     return response.status(500).json({
-      message: "Internal server error",
-      statusCode: 500,
-      success: false,
+      data: null,
+      error: "Internal server error",
+      status: 500,
     });
   }
 }

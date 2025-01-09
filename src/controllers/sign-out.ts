@@ -13,29 +13,29 @@ export async function handleSignOut(
 
     if (!isValidObjectId(id)) {
       return response.status(400).json({
-        message: "Invalid user ID format",
-        statusCode: 400,
-        success: false,
+        data: null,
+        error: "Invalid user ID format",
+        status: 400,
       });
     }
 
     const refreshToken = request.signedCookies?.refreshToken;
 
     if (!refreshToken) {
-      return response.status(200).json({
-        message: "No active session found",
-        statusCode: 200,
-        success: true,
+      return response.status(401).json({
+        data: null,
+        error: "Invalid session token",
+        status: 401,
       });
     }
 
     const user = await User.findById(id);
 
     if (!user || !user.hashedRefreshToken) {
-      return response.status(200).json({
-        message: "No active session found",
-        statusCode: 200,
-        success: true,
+      return response.status(401).json({
+        data: null,
+        error: "Invalid session token",
+        status: 401,
       });
     }
 
@@ -43,9 +43,9 @@ export async function handleSignOut(
 
     if (!isMatch) {
       return response.status(401).json({
-        message: "Invalid session token",
-        statusCode: 401,
-        success: false,
+        data: null,
+        error: "Invalid session token",
+        status: 401,
       });
     }
 
@@ -60,17 +60,17 @@ export async function handleSignOut(
     });
 
     return response.status(200).json({
-      message: "User signed out successfully",
-      statusCode: 200,
-      success: true,
+      data: null,
+      error: null,
+      status: 200,
     });
   } catch (error) {
-    console.error("Sign-out error:", error);
+    console.error(error);
 
     return response.status(500).json({
-      message: "Internal server error",
-      statusCode: 500,
-      success: false,
+      data: null,
+      error: "Internal server error",
+      status: 500,
     });
   }
 }

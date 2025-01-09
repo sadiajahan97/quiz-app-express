@@ -2,15 +2,16 @@ import { Request, Response } from "express";
 import { mongo } from "mongoose";
 import { z } from "zod";
 
-import { User, userZodSchema } from "@quiz-app/models/user";
+import { User } from "@quiz-app/models/user";
 import { hashData } from "@quiz-app/utils/bcrypt";
+import { signUpSchema } from "@quiz-app/validators/sign-up";
 
 export async function handleSignUp(
-  request: Request<unknown, unknown, z.infer<typeof userZodSchema>>,
+  request: Request<unknown, unknown, z.infer<typeof signUpSchema>>,
   response: Response
 ): Promise<Response> {
   try {
-    const validatedData = userZodSchema.parse(request.body);
+    const validatedData = signUpSchema.parse(request.body);
 
     const { displayPicture, email, name, password } = validatedData;
 
@@ -18,52 +19,61 @@ export async function handleSignUp(
 
     if (existingUser) {
       return response.status(409).json({
-        message: "Email already exists",
-        statusCode: 409,
-        success: false,
+        data: null,
+        error: "Email already exists",
+        status: 409,
       });
     }
 
     const hashedPassword = await hashData(password);
 
     const newUser = new User({
-      displayPicture: displayPicture || "",
+      displayPicture,
       email,
       hashedPassword,
       name,
     });
 
-    await newUser.save();
+    const savedUser = await newUser.save();
 
     return response.status(201).json({
-      message: "User signed up successfully",
-      statusCode: 201,
-      success: true,
+      data: {
+        displayPicture: savedUser.displayPicture,
+        email: savedUser.email,
+        name: savedUser.name,
+      },
+      error: null,
+      status: 201,
     });
   } catch (error) {
-    console.error("Sign-up error:", error);
-
     if (error instanceof z.ZodError) {
+      const validationError: Record<string, string> = {};
+
+      for (const err of error.errors) {
+        const path = err.path.join(".");
+
+        validationError[path] = err.message;
+      }
+
       return response.status(400).json({
-        errors: error.errors,
-        message: "Validation failed",
-        statusCode: 400,
-        success: false,
+        data: null,
+        error: validationError,
+        status: 400,
       });
     }
 
     if (error instanceof mongo.MongoError && error.code === 11000) {
       return response.status(409).json({
-        message: "Email already exists",
-        statusCode: 409,
-        success: false,
+        data: null,
+        error: "Email already exists",
+        status: 409,
       });
     }
 
     return response.status(500).json({
-      message: "Internal server error",
-      statusCode: 500,
-      success: false,
+      data: null,
+      error: "Internal server error",
+      status: 500,
     });
   }
 }
