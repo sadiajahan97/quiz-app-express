@@ -3,11 +3,15 @@ import { isValidObjectId } from "mongoose";
 import { z } from "zod";
 
 import { User } from "@quiz-app/models/user";
-import { hashData } from "@quiz-app/utils/bcrypt";
-import { editUserSchema } from "@quiz-app/validators/edit-user";
+import { compareData } from "@quiz-app/utils/bcrypt";
+import { editDisplayPictureSchema } from "@quiz-app/validators/edit-user";
 
-export async function handleEditUser(
-  request: Request<{ id: string }, unknown, z.infer<typeof editUserSchema>>,
+export async function handleEditDisplayPicture(
+  request: Request<
+    { id: string },
+    unknown,
+    z.infer<typeof editDisplayPictureSchema>
+  >,
   response: Response
 ): Promise<Response> {
   try {
@@ -15,82 +19,68 @@ export async function handleEditUser(
 
     if (!isValidObjectId(id)) {
       return response.status(400).json({
+        data: null,
         message: "Invalid user ID format",
-        statusCode: 400,
-        success: false,
+        status: 400,
       });
     }
 
-    const validatedData = editUserSchema.parse(request.body);
-
-    if (Object.keys(validatedData).length === 0) {
-      return response.status(400).json({
-        message: "No valid fields provided for update",
-        statusCode: 400,
-        success: false,
-      });
-    }
+    const { displayPicture, password } = editDisplayPictureSchema.parse(
+      request.body
+    );
 
     const user = await User.findById(id);
 
-    if (!user) {
+    if (!user || !user.hashedPassword) {
       return response.status(404).json({
+        data: null,
         message: "User not found",
-        statusCode: 404,
-        success: false,
+        status: 404,
       });
     }
 
-    const { email } = validatedData;
+    const isMatch = await compareData(password, user.hashedPassword);
 
-    if (email && email !== user.email) {
-      const existingUser = await User.findOne({ email });
-
-      if (existingUser) {
-        return response.status(409).json({
-          message: "Email already in use",
-          statusCode: 409,
-          success: false,
-        });
-      }
+    if (!isMatch) {
+      return response.status(403).json({
+        data: null,
+        message: "Incorrect password",
+        status: 403,
+      });
     }
 
-    for (const [field, value] of Object.entries(validatedData)) {
-      if (field === "password" && value) {
-        user.set("hashedPassword", await hashData(value));
-      } else if (value) {
-        user.set(field, value);
-      }
-    }
+    user.displayPicture = displayPicture || ""; // Assign a default display picture
 
     const updatedUser = await user.save();
 
     return response.status(200).json({
       data: {
         displayPicture: updatedUser.displayPicture,
-        email: updatedUser.email,
-        name: updatedUser.name,
       },
-      message: "User information updated successfully",
-      statusCode: 200,
-      success: true,
+      message: "User display picture updated successfully",
+      status: 200,
     });
   } catch (error) {
-    console.error("Edit user error:", error);
-
     if (error instanceof z.ZodError) {
+      const validationErrors: Record<string, string> = {};
+
+      for (const err of error.errors) {
+        const path = err.path.join(".");
+
+        validationErrors[path] = err.message;
+      }
+
       return response.status(400).json({
-        errors: error.errors,
-        message: "Validation failed",
-        statusCode: 400,
-        success: false,
+        data: null,
+        message: validationErrors,
+        status: 400,
       });
     }
 
     return response.status(500).json({
+      data: null,
       message: "Internal server error",
-      statusCode: 500,
-      success: false,
+      status: 500,
     });
   }
 }

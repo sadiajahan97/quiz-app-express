@@ -1,9 +1,9 @@
 import { Application, Router } from "express";
 
-import { handleEditUser } from "@quiz-app/controllers/edit-user";
+import { handleEditDisplayPicture } from "@quiz-app/controllers/edit-user";
 
 const editUserRouter = Router();
 
-editUserRouter.post("/:id", handleEditUser as Application);
+editUserRouter.post("/picture", handleEditDisplayPicture as Application);
 
 export { editUserRouter };

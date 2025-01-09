@@ -11,16 +11,16 @@ export async function handleSignUp(
   response: Response
 ): Promise<Response> {
   try {
-    const validatedData = signUpSchema.parse(request.body);
-
-    const { displayPicture, email, name, password } = validatedData;
+    const { displayPicture, email, name, password } = signUpSchema.parse(
+      request.body
+    );
 
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
       return response.status(409).json({
         data: null,
-        error: "Email already exists",
+        message: "Email already exists",
         status: 409,
       });
     }
@@ -42,22 +42,22 @@ export async function handleSignUp(
         email: savedUser.email,
         name: savedUser.name,
       },
-      error: null,
+      message: "User signed up successfully",
       status: 201,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const validationError: Record<string, string> = {};
+      const validationErrors: Record<string, string> = {};
 
       for (const err of error.errors) {
         const path = err.path.join(".");
 
-        validationError[path] = err.message;
+        validationErrors[path] = err.message;
       }
 
       return response.status(400).json({
         data: null,
-        error: validationError,
+        message: validationErrors,
         status: 400,
       });
     }
@@ -65,14 +65,14 @@ export async function handleSignUp(
     if (error instanceof mongo.MongoError && error.code === 11000) {
       return response.status(409).json({
         data: null,
-        error: "Email already exists",
+        message: "Email already exists",
         status: 409,
       });
     }
 
     return response.status(500).json({
       data: null,
-      error: "Internal server error",
+      message: "Internal server error",
       status: 500,
     });
   }

@@ -11,16 +11,14 @@ export async function handleSignIn(
   response: Response
 ): Promise<Response> {
   try {
-    const validatedData = signInSchema.parse(request.body);
-
-    const { email, password } = validatedData;
+    const { email, password } = signInSchema.parse(request.body);
 
     const user = await User.findOne({ email });
 
     if (!user || !user.hashedPassword) {
       return response.status(401).json({
         data: null,
-        error: "Invalid email or password",
+        message: "Invalid email or password",
         status: 401,
       });
     }
@@ -30,7 +28,7 @@ export async function handleSignIn(
     if (!isMatch) {
       return response.status(401).json({
         data: null,
-        error: "Invalid email or password",
+        message: "Invalid email or password",
         status: 401,
       });
     }
@@ -40,9 +38,7 @@ export async function handleSignIn(
       user._id as string
     );
 
-    const hashedRefreshToken = await hashData(refreshToken);
-
-    user.hashedRefreshToken = hashedRefreshToken;
+    user.hashedRefreshToken = await hashData(refreshToken);
 
     await user.save();
 
@@ -56,29 +52,29 @@ export async function handleSignIn(
       data: {
         accessToken,
       },
-      error: null,
+      message: "User signed in successfully",
       status: 200,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const validationError: Record<string, string> = {};
+      const validationErrors: Record<string, string> = {};
 
       for (const err of error.errors) {
         const path = err.path.join(".");
 
-        validationError[path] = err.message;
+        validationErrors[path] = err.message;
       }
 
       return response.status(400).json({
         data: null,
-        error: validationError,
+        message: validationErrors,
         status: 400,
       });
     }
 
     return response.status(500).json({
       data: null,
-      error: "Internal server error",
+      message: "Internal server error",
       status: 500,
     });
   }

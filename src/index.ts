@@ -39,7 +39,7 @@ connect(DATABASE_URL)
     process.exit(1);
   });
 
-app.use("/account", editUserRouter);
+app.use("/account/:id", editUserRouter);
 app.use("/sign-in", signInRouter);
 app.use("/sign-out", signOutRouter);
 app.use("/sign-up", signUpRouter);
