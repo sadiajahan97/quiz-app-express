@@ -2,14 +2,17 @@ import { Request, Response } from "express";
 import { isValidObjectId } from "mongoose";
 
 import { User } from "@quiz-app/models/user";
+import { Authentication } from "@quiz-app/types/authentication";
 import { compareData } from "@quiz-app/utils/bcrypt";
 
+interface SignOutRequest extends Authentication, Request {}
+
 export async function handleSignOut(
-  request: Request<{ id: string }>,
+  request: SignOutRequest,
   response: Response
 ): Promise<Response> {
   try {
-    const { id } = request.params;
+    const { id } = request.user;
 
     if (!isValidObjectId(id)) {
       return response.status(400).json({

@@ -3,19 +3,20 @@ import { isValidObjectId } from "mongoose";
 import { z } from "zod";
 
 import { User } from "@quiz-app/models/user";
+import { Authentication } from "@quiz-app/types/authentication";
 import { compareData } from "@quiz-app/utils/bcrypt";
 import { editDisplayPictureSchema } from "@quiz-app/validators/edit-user";
 
+interface EditDisplayPictureRequest
+  extends Authentication,
+    Request<unknown, unknown, z.infer<typeof editDisplayPictureSchema>> {}
+
 export async function handleEditDisplayPicture(
-  request: Request<
-    { id: string },
-    unknown,
-    z.infer<typeof editDisplayPictureSchema>
-  >,
+  request: EditDisplayPictureRequest,
   response: Response
 ): Promise<Response> {
   try {
-    const { id } = request.params;
+    const { id } = request.user;
 
     if (!isValidObjectId(id)) {
       return response.status(400).json({

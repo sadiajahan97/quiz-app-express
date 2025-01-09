@@ -4,6 +4,6 @@ import { handleSignOut } from "@quiz-app/controllers/sign-out";
 
 const signOutRouter = Router();
 
-signOutRouter.post("/:id", handleSignOut as Application);
+signOutRouter.post("", handleSignOut as Application);
 
 export { signOutRouter };
