@@ -9,28 +9,30 @@ import { signInSchema } from "@quiz-app/validators/sign-in";
 export async function handleSignIn(
   request: Request<unknown, unknown, z.infer<typeof signInSchema>>,
   response: Response
-): Promise<Response> {
+): Promise<void> {
   try {
     const { email, password } = signInSchema.parse(request.body);
 
     const user = await User.findOne({ email });
 
     if (!user || !user.hashedPassword) {
-      return response.status(401).json({
+      response.status(401).json({
         data: null,
         message: "Invalid email or password",
         status: 401,
       });
+      return;
     }
 
     const isMatch = await compareData(password, user.hashedPassword);
 
     if (!isMatch) {
-      return response.status(401).json({
+      response.status(401).json({
         data: null,
         message: "Invalid email or password",
         status: 401,
       });
+      return;
     }
 
     const { accessToken, refreshToken } = createTokens(
@@ -48,7 +50,7 @@ export async function handleSignIn(
       signed: true,
     });
 
-    return response.status(200).json({
+    response.status(200).json({
       data: {
         accessToken,
       },
@@ -65,14 +67,15 @@ export async function handleSignIn(
         validationErrors[path] = err.message;
       }
 
-      return response.status(400).json({
+      response.status(400).json({
         data: null,
         message: validationErrors,
         status: 400,
       });
+      return;
     }
 
-    return response.status(500).json({
+    response.status(500).json({
       data: null,
       message: "Internal server error",
       status: 500,

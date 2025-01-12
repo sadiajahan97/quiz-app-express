@@ -9,7 +9,7 @@ import { signUpSchema } from "@quiz-app/validators/sign-up";
 export async function handleSignUp(
   request: Request<unknown, unknown, z.infer<typeof signUpSchema>>,
   response: Response
-): Promise<Response> {
+): Promise<void> {
   try {
     const { displayPicture, email, name, password } = signUpSchema.parse(
       request.body
@@ -18,11 +18,12 @@ export async function handleSignUp(
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      return response.status(409).json({
+      response.status(409).json({
         data: null,
         message: "Email already exists",
         status: 409,
       });
+      return;
     }
 
     const hashedPassword = await hashData(password);
@@ -36,7 +37,7 @@ export async function handleSignUp(
 
     const savedUser = await newUser.save();
 
-    return response.status(201).json({
+    response.status(201).json({
       data: {
         displayPicture: savedUser.displayPicture,
         email: savedUser.email,
@@ -55,22 +56,24 @@ export async function handleSignUp(
         validationErrors[path] = err.message;
       }
 
-      return response.status(400).json({
+      response.status(400).json({
         data: null,
         message: validationErrors,
         status: 400,
       });
+      return;
     }
 
     if (error instanceof mongo.MongoError && error.code === 11000) {
-      return response.status(409).json({
+      response.status(409).json({
         data: null,
         message: "Email already exists",
         status: 409,
       });
+      return;
     }
 
-    return response.status(500).json({
+    response.status(500).json({
       data: null,
       message: "Internal server error",
       status: 500,

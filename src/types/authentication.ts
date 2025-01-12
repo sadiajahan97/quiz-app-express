@@ -1,6 +1,5 @@
+import { TokenPayload } from "./jsonwebtoken";
+
 export interface Authentication {
-  user: {
-    email: string;
-    id: string;
-  };
+  user: TokenPayload;
 }

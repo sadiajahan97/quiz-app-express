@@ -1,9 +1,9 @@
-import { Application, Router } from "express";
+import { Router } from "express";
 
 import { handleSignIn } from "@quiz-app/controllers/sign-in";
 
 const signInRouter = Router();
 
-signInRouter.post("/", handleSignIn as Application);
+signInRouter.post("/", handleSignIn);
 
 export { signInRouter };

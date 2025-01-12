@@ -7,23 +7,24 @@ import { Authentication } from "@quiz-app/types/authentication";
 import { compareData } from "@quiz-app/utils/bcrypt";
 import { editDisplayPictureSchema } from "@quiz-app/validators/edit-user";
 
-interface EditDisplayPictureRequest
-  extends Authentication,
-    Request<unknown, unknown, z.infer<typeof editDisplayPictureSchema>> {}
-
 export async function handleEditDisplayPicture(
-  request: EditDisplayPictureRequest,
+  request: Request<
+    unknown,
+    unknown,
+    Authentication & z.infer<typeof editDisplayPictureSchema>
+  >,
   response: Response
-): Promise<Response> {
+): Promise<void> {
   try {
-    const { id } = request.user;
+    const { id } = request.body.user;
 
     if (!isValidObjectId(id)) {
-      return response.status(400).json({
+      response.status(400).json({
         data: null,
         message: "Invalid user ID format",
         status: 400,
       });
+      return;
     }
 
     const { displayPicture, password } = editDisplayPictureSchema.parse(
@@ -33,28 +34,30 @@ export async function handleEditDisplayPicture(
     const user = await User.findById(id);
 
     if (!user || !user.hashedPassword) {
-      return response.status(404).json({
+      response.status(404).json({
         data: null,
         message: "User not found",
         status: 404,
       });
+      return;
     }
 
     const isMatch = await compareData(password, user.hashedPassword);
 
     if (!isMatch) {
-      return response.status(403).json({
+      response.status(403).json({
         data: null,
         message: "Incorrect password",
         status: 403,
       });
+      return;
     }
 
     user.displayPicture = displayPicture || ""; // Assign a default display picture
 
     const updatedUser = await user.save();
 
-    return response.status(200).json({
+    response.status(200).json({
       data: {
         displayPicture: updatedUser.displayPicture,
       },
@@ -71,14 +74,15 @@ export async function handleEditDisplayPicture(
         validationErrors[path] = err.message;
       }
 
-      return response.status(400).json({
+      response.status(400).json({
         data: null,
         message: validationErrors,
         status: 400,
       });
+      return;
     }
 
-    return response.status(500).json({
+    response.status(500).json({
       data: null,
       message: "Internal server error",
       status: 500,

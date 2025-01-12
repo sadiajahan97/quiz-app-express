@@ -4,6 +4,8 @@ import cors from "cors";
 import express, { json, urlencoded } from "express";
 import { connect } from "mongoose";
 
+import { verifyAccessToken } from "@quiz-app/middleware/jsonwebtoken";
+
 import { corsOptions } from "./config/cors";
 import { COOKIE_PARSER_SECRET, DATABASE_URL } from "./config/environment";
 import { editUserRouter } from "./routes/edit-user";
@@ -13,10 +15,12 @@ import { signUpRouter } from "./routes/sign-up";
 
 const app = express();
 
-app.use(cors(corsOptions));
-app.use(urlencoded({ extended: true }));
-app.use(cookieParser(COOKIE_PARSER_SECRET));
-app.use(json());
+app.use(
+  cors(corsOptions),
+  urlencoded({ extended: true }),
+  cookieParser(COOKIE_PARSER_SECRET),
+  json()
+);
 
 connect(DATABASE_URL)
   .then(() => console.log("Connected to MongoDB"))
@@ -26,9 +30,9 @@ connect(DATABASE_URL)
     process.exit(1);
   });
 
-app.use("/account", editUserRouter);
+app.use("/account", verifyAccessToken, editUserRouter);
 app.use("/sign-in", signInRouter);
-app.use("/sign-out", signOutRouter);
+app.use("/sign-out", verifyAccessToken, signOutRouter);
 app.use("/sign-up", signUpRouter);
 
 app.listen(3500, () => {

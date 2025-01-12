@@ -5,51 +5,53 @@ import { User } from "@quiz-app/models/user";
 import { Authentication } from "@quiz-app/types/authentication";
 import { compareData } from "@quiz-app/utils/bcrypt";
 
-interface SignOutRequest extends Authentication, Request {}
-
 export async function handleSignOut(
-  request: SignOutRequest,
+  request: Request<unknown, unknown, Authentication>,
   response: Response
-): Promise<Response> {
+): Promise<void> {
   try {
-    const { id } = request.user;
+    const { id } = request.body.user;
 
     if (!isValidObjectId(id)) {
-      return response.status(400).json({
+      response.status(400).json({
         data: null,
         message: "Invalid user ID format",
         status: 400,
       });
+      return;
     }
 
     const refreshToken = request.signedCookies?.refreshToken;
 
     if (!refreshToken) {
-      return response.status(401).json({
+      response.status(401).json({
         data: null,
-        message: "Invalid session token",
+        message: "Invalid refresh token",
         status: 401,
       });
+      return;
     }
 
     const user = await User.findById(id);
 
     if (!user || !user.hashedRefreshToken) {
-      return response.status(404).json({
+      response.status(404).json({
         data: null,
         message: "User not found",
         status: 404,
       });
+      return;
     }
 
     const isMatch = await compareData(refreshToken, user.hashedRefreshToken);
 
     if (!isMatch) {
-      return response.status(401).json({
+      response.status(401).json({
         data: null,
-        message: "Invalid session token",
+        message: "Invalid refresh token",
         status: 401,
       });
+      return;
     }
 
     user.hashedRefreshToken = "";
@@ -62,7 +64,7 @@ export async function handleSignOut(
       signed: true,
     });
 
-    return response.status(204).json({
+    response.status(204).json({
       data: null,
       message: "User signed out successfully",
       status: 204,
@@ -70,7 +72,7 @@ export async function handleSignOut(
   } catch (error) {
     console.error(error);
 
-    return response.status(500).json({
+    response.status(500).json({
       data: null,
       message: "Internal server error",
       status: 500,
