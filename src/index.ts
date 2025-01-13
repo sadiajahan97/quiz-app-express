@@ -4,14 +4,10 @@ import cors from "cors";
 import express, { json, urlencoded } from "express";
 import { connect } from "mongoose";
 
-import { verifyAccessToken } from "@quiz-app/middleware/jsonwebtoken";
-
 import { corsOptions } from "./config/cors";
 import { COOKIE_PARSER_SECRET, DATABASE_URL } from "./config/environment";
-import { editUserRouter } from "./routes/edit-user";
-import { signInRouter } from "./routes/sign-in";
-import { signOutRouter } from "./routes/sign-out";
-import { signUpRouter } from "./routes/sign-up";
+import { protectedRouter } from "./protected-routes";
+import { router } from "./routes";
 
 const app = express();
 
@@ -30,10 +26,9 @@ connect(DATABASE_URL)
     process.exit(1);
   });
 
-app.use("/account", verifyAccessToken, editUserRouter);
-app.use("/sign-in", signInRouter);
-app.use("/sign-out", verifyAccessToken, signOutRouter);
-app.use("/sign-up", signUpRouter);
+app.use(protectedRouter);
+
+app.use(router);
 
 app.listen(3500, () => {
   console.log("Server running on port 3500");

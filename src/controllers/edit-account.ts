@@ -8,7 +8,7 @@ import { compareData } from "@quiz-app/utils/bcrypt";
 import {
   editDisplayPictureSchema,
   editNameSchema,
-} from "@quiz-app/validators/edit-user";
+} from "@quiz-app/validators/edit-account";
 
 export async function handleEditDisplayPicture(
   request: Request<

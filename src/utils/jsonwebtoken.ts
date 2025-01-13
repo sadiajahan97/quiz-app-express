@@ -6,12 +6,7 @@ import {
 } from "@quiz-app/config/environment";
 import { TokenPayload } from "@quiz-app/types/jsonwebtoken";
 
-interface Tokens {
-  accessToken: string;
-  refreshToken: string;
-}
-
-export function createTokens(email: string, id: string): Tokens {
+export function createAccessToken(email: string, id: string): string {
   try {
     const tokenPayload: TokenPayload = { email, id };
 
@@ -19,16 +14,30 @@ export function createTokens(email: string, id: string): Tokens {
       expiresIn: "15m",
     });
 
+    return accessToken;
+  } catch (error) {
+    console.error("Error creating access token:", error);
+
+    throw new Error(
+      "Access token creation failed due to invalid payload or configuration"
+    );
+  }
+}
+
+export function createRefreshToken(email: string, id: string): string {
+  try {
+    const tokenPayload: TokenPayload = { email, id };
+
     const refreshToken = sign(tokenPayload, REFRESH_TOKEN_SECRET, {
       expiresIn: "1d",
     });
 
-    return { accessToken, refreshToken };
+    return refreshToken;
   } catch (error) {
-    console.error("Error creating tokens:", error);
+    console.error("Error creating refresh token:", error);
 
     throw new Error(
-      "Token creation failed due to invalid payload or configuration."
+      "Refresh token creation failed due to invalid payload or configuration"
     );
   }
 }

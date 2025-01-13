@@ -3,7 +3,10 @@ import { z } from "zod";
 
 import { User } from "@quiz-app/models/user";
 import { compareData, hashData } from "@quiz-app/utils/bcrypt";
-import { createTokens } from "@quiz-app/utils/jsonwebtoken";
+import {
+  createAccessToken,
+  createRefreshToken,
+} from "@quiz-app/utils/jsonwebtoken";
 import { signInSchema } from "@quiz-app/validators/sign-in";
 
 export async function handleSignIn(
@@ -35,10 +38,9 @@ export async function handleSignIn(
       return;
     }
 
-    const { accessToken, refreshToken } = createTokens(
-      email,
-      user._id as string
-    );
+    const accessToken = createAccessToken(email, user._id as string);
+
+    const refreshToken = createRefreshToken(email, user._id as string);
 
     user.hashedRefreshToken = await hashData(refreshToken);
 
