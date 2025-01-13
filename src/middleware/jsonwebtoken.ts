@@ -19,6 +19,7 @@ export function verifyAccessToken(
         message: "Access token is missing",
         status: 401,
       });
+
       return;
     }
 
@@ -36,6 +37,7 @@ export function verifyAccessToken(
         message: "Invalid access token",
         status: 401,
       });
+
       return;
     }
 
@@ -45,6 +47,7 @@ export function verifyAccessToken(
         message: "Access token has expired",
         status: 401,
       });
+
       return;
     }
 

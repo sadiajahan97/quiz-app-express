@@ -23,6 +23,7 @@ export async function handleSignUp(
         message: "Email already exists",
         status: 409,
       });
+
       return;
     }
 
@@ -61,6 +62,7 @@ export async function handleSignUp(
         message: validationErrors,
         status: 400,
       });
+
       return;
     }
 
@@ -70,6 +72,7 @@ export async function handleSignUp(
         message: "Email already exists",
         status: 409,
       });
+
       return;
     }
 

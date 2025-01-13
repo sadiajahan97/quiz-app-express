@@ -18,6 +18,7 @@ export async function handleSignOut(
         message: "Invalid user ID format",
         status: 400,
       });
+
       return;
     }
 
@@ -29,6 +30,7 @@ export async function handleSignOut(
         message: "Refresh token is missing",
         status: 401,
       });
+
       return;
     }
 
@@ -40,6 +42,7 @@ export async function handleSignOut(
         message: "User not found",
         status: 404,
       });
+
       return;
     }
 
@@ -51,6 +54,7 @@ export async function handleSignOut(
         message: "Invalid refresh token",
         status: 401,
       });
+
       return;
     }
 

@@ -24,6 +24,7 @@ export async function handleSignIn(
         message: "Invalid email or password",
         status: 401,
       });
+
       return;
     }
 
@@ -35,6 +36,7 @@ export async function handleSignIn(
         message: "Invalid email or password",
         status: 401,
       });
+
       return;
     }
 
@@ -74,6 +76,7 @@ export async function handleSignIn(
         message: validationErrors,
         status: 400,
       });
+
       return;
     }
 
