@@ -11,8 +11,4 @@ export const trueFalseQuestionSchema = z.object({
     QuestionDifficulties.MEDIUM,
   ]),
   question: z.string().trim().nonempty("Question is required"),
-  userId: z
-    .string()
-    .nonempty("User ID is required")
-    .regex(/^[0-9a-fA-F]{24}$/, "Invalid user ID format"),
 });
