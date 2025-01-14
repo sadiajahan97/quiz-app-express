@@ -5,7 +5,7 @@ import { handleSignOut } from "@quiz-app/controllers/sign-out";
 import { verifyAccessToken } from "@quiz-app/middleware/jsonwebtoken";
 
 import { editAccountRouter } from "./edit-account-routes";
-import { questionRouter } from "./question-routes";
+import { questionsRouter } from "./questions-routes";
 
 const protectedRouter = Router();
 
@@ -15,7 +15,7 @@ protectedRouter.use("/edit-account", editAccountRouter);
 
 protectedRouter.post("/extend-session", handleExtendSession);
 
-protectedRouter.use("/question", questionRouter);
+protectedRouter.use("/questions", questionsRouter);
 
 protectedRouter.post("/sign-out", handleSignOut);
 

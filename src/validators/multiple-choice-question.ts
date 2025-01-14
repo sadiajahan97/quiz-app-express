@@ -18,10 +18,6 @@ export const multipleChoiceQuestionSchema = z
         message: "Options must be unique",
       }),
     question: z.string().trim().nonempty("Question is required"),
-    userId: z
-      .string()
-      .nonempty("User ID is required")
-      .regex(/^[0-9a-fA-F]{24}$/, "Invalid user ID format"),
   })
   .refine((data) => data.options.includes(data.answer), {
     message: "Answer must be one of the options",
