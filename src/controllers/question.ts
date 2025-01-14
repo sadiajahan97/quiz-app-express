@@ -47,3 +47,49 @@ export async function handleDeleteQuestion(
     });
   }
 }
+
+export async function handleGetAllQuestions(
+  request: Request<unknown, unknown, Authentication>,
+  response: Response
+): Promise<void> {
+  try {
+    const { id } = request.body.user;
+
+    if (!isValidObjectId(id)) {
+      response.status(400).json({
+        data: null,
+        message: "Invalid user ID format",
+        status: 400,
+      });
+
+      return;
+    }
+
+    const allQuestions = await Question.find({
+      userId: id,
+    });
+
+    if (!allQuestions) {
+      response.status(404).json({
+        message: "User not found",
+        status: 404,
+      });
+
+      return;
+    }
+
+    response.status(200).json({
+      data: allQuestions,
+      message: "All questions retrieved successfully",
+      status: 200,
+    });
+  } catch (error) {
+    console.error("Error retrieving questions:", error);
+
+    response.status(500).json({
+      data: null,
+      message: "Internal server error",
+      status: 500,
+    });
+  }
+}
