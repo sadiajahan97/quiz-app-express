@@ -42,6 +42,7 @@ export async function handleSignUp(
       data: {
         displayPicture: savedUser.displayPicture,
         email: savedUser.email,
+        id: savedUser._id,
         name: savedUser.name,
       },
       message: "User signed up successfully",
