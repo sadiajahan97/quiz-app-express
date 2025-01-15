@@ -21,7 +21,7 @@ export async function handleExtendSession(
       );
     }
 
-    const { id } = request.body.user;
+    const { id } = request.body.authentication;
 
     if (!isValidObjectId(id)) {
       response.status(400).json({

@@ -34,7 +34,7 @@ export function verifyAccessToken(
 
     const decoded = verify(accessToken, ACCESS_TOKEN_SECRET) as TokenPayload;
 
-    request.body.user = decoded;
+    request.body.authentication = decoded;
 
     next();
   } catch (error) {
@@ -54,6 +54,8 @@ export function verifyAccessToken(
         message: "Access token has expired",
         status: 401,
       });
+
+      response.redirect("/extend-session");
 
       return;
     }

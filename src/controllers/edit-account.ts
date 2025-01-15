@@ -21,7 +21,7 @@ export async function handleEditDisplayPicture(
   response: Response
 ): Promise<void> {
   try {
-    const { id } = request.body.user;
+    const { id } = request.body.authentication;
 
     if (!isValidObjectId(id)) {
       response.status(400).json({
@@ -108,7 +108,7 @@ export async function handleEditEmail(
   response: Response
 ): Promise<void> {
   try {
-    const { id } = request.body.user;
+    const { id } = request.body.authentication;
 
     if (!isValidObjectId(id)) {
       response.status(400).json({
@@ -207,7 +207,7 @@ export async function handleEditName(
   response: Response
 ): Promise<void> {
   try {
-    const { id } = request.body.user;
+    const { id } = request.body.authentication;
 
     if (!isValidObjectId(id)) {
       response.status(400).json({
@@ -292,7 +292,7 @@ export async function handleEditPassword(
   response: Response
 ): Promise<void> {
   try {
-    const { id } = request.body.user;
+    const { id } = request.body.authentication;
 
     if (!isValidObjectId(id)) {
       response.status(400).json({

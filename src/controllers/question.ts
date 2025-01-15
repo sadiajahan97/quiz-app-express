@@ -60,7 +60,7 @@ export async function handleGetAllQuestionsByUser(
   response: Response
 ): Promise<void> {
   try {
-    const { id } = request.body.user;
+    const { id } = request.body.authentication;
 
     if (!isValidObjectId(id)) {
       response.status(400).json({
@@ -110,7 +110,7 @@ export async function handlePostMultipleChoiceQuestion(
   response: Response
 ): Promise<void> {
   try {
-    const { id } = request.body.user;
+    const { id } = request.body.authentication;
 
     if (!isValidObjectId(id)) {
       response.status(400).json({
@@ -184,7 +184,7 @@ export async function handlePostTrueFalseQuestion(
   response: Response
 ): Promise<void> {
   try {
-    const { id } = request.body.user;
+    const { id } = request.body.authentication;
 
     if (!isValidObjectId(id)) {
       response.status(400).json({

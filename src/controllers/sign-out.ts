@@ -10,7 +10,7 @@ export async function handleSignOut(
   response: Response
 ): Promise<void> {
   try {
-    const { id } = request.body.user;
+    const { id } = request.body.authentication;
 
     if (!isValidObjectId(id)) {
       response.status(400).json({
@@ -64,14 +64,13 @@ export async function handleSignOut(
 
     response.clearCookie("refreshToken", {
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
       signed: true,
     });
 
-    response.status(204).json({
+    response.status(200).json({
       data: null,
       message: "User signed out successfully",
-      status: 204,
+      status: 200,
     });
   } catch (error) {
     console.error(error);
