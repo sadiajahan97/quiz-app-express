@@ -1,13 +1,17 @@
 import { sign } from "jsonwebtoken";
 
-import {
-  ACCESS_TOKEN_SECRET,
-  REFRESH_TOKEN_SECRET,
-} from "@quiz-app/config/environment";
 import { TokenPayload } from "@quiz-app/types/jsonwebtoken";
 
 export function createAccessToken(email: string, id: string): string {
   try {
+    const { ACCESS_TOKEN_SECRET } = process.env;
+
+    if (!ACCESS_TOKEN_SECRET) {
+      throw new Error(
+        "Environment variable for access token secret is not set"
+      );
+    }
+
     const tokenPayload: TokenPayload = { email, id };
 
     const accessToken = sign(tokenPayload, ACCESS_TOKEN_SECRET, {
@@ -16,16 +20,24 @@ export function createAccessToken(email: string, id: string): string {
 
     return accessToken;
   } catch (error) {
-    console.error("Error creating access token:", error);
+    if (error instanceof Error) {
+      console.error("Error creating access token:", error.message);
+    }
 
-    throw new Error(
-      "Access token creation failed due to invalid payload or configuration"
-    );
+    return "";
   }
 }
 
 export function createRefreshToken(email: string, id: string): string {
   try {
+    const { REFRESH_TOKEN_SECRET } = process.env;
+
+    if (!REFRESH_TOKEN_SECRET) {
+      throw new Error(
+        "Environment variable for refresh token secret is not set"
+      );
+    }
+
     const tokenPayload: TokenPayload = { email, id };
 
     const refreshToken = sign(tokenPayload, REFRESH_TOKEN_SECRET, {
@@ -34,10 +46,10 @@ export function createRefreshToken(email: string, id: string): string {
 
     return refreshToken;
   } catch (error) {
-    console.error("Error creating refresh token:", error);
+    if (error instanceof Error) {
+      console.error("Error creating refresh token:", error.message);
+    }
 
-    throw new Error(
-      "Refresh token creation failed due to invalid payload or configuration"
-    );
+    return "";
   }
 }

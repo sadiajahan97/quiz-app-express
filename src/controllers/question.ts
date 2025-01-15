@@ -5,8 +5,11 @@ import { z } from "zod";
 import { QuestionTypes } from "@quiz-app/enums/question";
 import { Question } from "@quiz-app/models/question";
 import { Authentication } from "@quiz-app/types/authentication";
-import { multipleChoiceQuestionSchema } from "@quiz-app/validators/multiple-choice-question";
-import { trueFalseQuestionSchema } from "@quiz-app/validators/true-false-question";
+import {
+  postMultipleChoiceQuestionSchema,
+  postTrueFalseQuestionSchema,
+  updateTrueFalseQuestionSchema,
+} from "@quiz-app/validators/question";
 
 export async function handleDeleteQuestion(
   request: Request<{ id: string }, unknown, Authentication>,
@@ -102,7 +105,7 @@ export async function handlePostMultipleChoiceQuestion(
   request: Request<
     unknown,
     unknown,
-    Authentication & z.infer<typeof multipleChoiceQuestionSchema>
+    Authentication & z.infer<typeof postMultipleChoiceQuestionSchema>
   >,
   response: Response
 ): Promise<void> {
@@ -120,7 +123,7 @@ export async function handlePostMultipleChoiceQuestion(
     }
 
     const { answer, category, difficulty, options, question } =
-      multipleChoiceQuestionSchema.parse(request.body);
+      postMultipleChoiceQuestionSchema.parse(request.body);
 
     const newQuestion = new Question({
       answer,
@@ -176,7 +179,7 @@ export async function handlePostTrueFalseQuestion(
   request: Request<
     unknown,
     unknown,
-    Authentication & z.infer<typeof trueFalseQuestionSchema>
+    Authentication & z.infer<typeof postTrueFalseQuestionSchema>
   >,
   response: Response
 ): Promise<void> {
@@ -194,7 +197,7 @@ export async function handlePostTrueFalseQuestion(
     }
 
     const { answer, category, difficulty, question } =
-      trueFalseQuestionSchema.parse(request.body);
+      postTrueFalseQuestionSchema.parse(request.body);
 
     const newQuestion = new Question({
       answer,
@@ -217,6 +220,96 @@ export async function handlePostTrueFalseQuestion(
       },
       message: "True/False question posted successfully",
       status: 201,
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const validationErrors: Record<string, string> = {};
+
+      for (const err of error.errors) {
+        const path = err.path.join(".");
+
+        validationErrors[path] = err.message;
+      }
+
+      response.status(400).json({
+        data: null,
+        message: validationErrors,
+        status: 400,
+      });
+
+      return;
+    }
+
+    response.status(500).json({
+      data: null,
+      message: "Internal server error",
+      status: 500,
+    });
+  }
+}
+
+export async function handleUpdateTrueFalseQuestion(
+  request: Request<
+    { id: string },
+    unknown,
+    Authentication & z.infer<typeof updateTrueFalseQuestionSchema>
+  >,
+  response: Response
+): Promise<void> {
+  try {
+    const { id } = request.params;
+
+    if (!isValidObjectId(id)) {
+      response.status(400).json({
+        data: null,
+        message: "Invalid question ID format",
+        status: 400,
+      });
+
+      return;
+    }
+
+    const validatedData = updateTrueFalseQuestionSchema.parse(request.body);
+
+    if (Object.keys(validatedData).length === 0) {
+      response.status(400).json({
+        data: null,
+        message: "No valid fields provided for update",
+        status: 400,
+      });
+
+      return;
+    }
+
+    const question = await Question.findById(id);
+
+    if (!question) {
+      response.status(404).json({
+        data: null,
+        message: "Question not found",
+        status: 404,
+      });
+
+      return;
+    }
+
+    for (const [field, value] of Object.entries(validatedData)) {
+      if (value) {
+        question.set(field, value);
+      }
+    }
+
+    const savedQuestion = await question.save();
+
+    response.status(200).json({
+      data: {
+        answer: savedQuestion.answer,
+        category: savedQuestion.category,
+        difficulty: savedQuestion.difficulty,
+        question: savedQuestion.question,
+      },
+      message: "Question updated successfully",
+      status: 200,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

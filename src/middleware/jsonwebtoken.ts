@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 
-import { ACCESS_TOKEN_SECRET } from "@quiz-app/config/environment";
 import { Authentication } from "@quiz-app/types/authentication";
 import { TokenPayload } from "@quiz-app/types/jsonwebtoken";
 
@@ -11,7 +10,15 @@ export function verifyAccessToken(
   next: NextFunction
 ): void {
   try {
-    const authorization = request.headers.authorization;
+    const { ACCESS_TOKEN_SECRET } = process.env;
+
+    if (!ACCESS_TOKEN_SECRET) {
+      throw new Error(
+        "Environment variable for access token secret is not set"
+      );
+    }
+
+    const { authorization } = request.headers;
 
     if (!authorization || !authorization.startsWith("Bearer ")) {
       response.status(401).json({

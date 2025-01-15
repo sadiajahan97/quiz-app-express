@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 import { isValidObjectId } from "mongoose";
 
-import { REFRESH_TOKEN_SECRET } from "@quiz-app/config/environment";
 import { User } from "@quiz-app/models/user";
 import { Authentication } from "@quiz-app/types/authentication";
 import { TokenPayload } from "@quiz-app/types/jsonwebtoken";
@@ -14,6 +13,14 @@ export async function handleExtendSession(
   response: Response
 ): Promise<void> {
   try {
+    const { REFRESH_TOKEN_SECRET } = process.env;
+
+    if (!REFRESH_TOKEN_SECRET) {
+      throw new Error(
+        "Environment variable for refresh token secret is not set"
+      );
+    }
+
     const { id } = request.body.user;
 
     if (!isValidObjectId(id)) {

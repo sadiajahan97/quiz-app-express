@@ -1,35 +1,52 @@
 import "module-alias/register";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { config } from "dotenv";
+config();
 import express, { json, urlencoded } from "express";
 import { connect } from "mongoose";
 
 import { corsOptions } from "./config/cors";
-import { COOKIE_PARSER_SECRET, DATABASE_URL } from "./config/environment";
 import { protectedRouter } from "./protected-routes";
 import { router } from "./routes";
 
-const app = express();
+async function startServer(): Promise<void> {
+  try {
+    const { COOKIE_PARSER_SECRET, DATABASE_URL } = process.env;
 
-app.use(
-  cors(corsOptions),
-  urlencoded({ extended: true }),
-  cookieParser(COOKIE_PARSER_SECRET),
-  json()
-);
+    if (!COOKIE_PARSER_SECRET) {
+      throw new Error(
+        "Environment variable for cookie parser secret is not set"
+      );
+    }
 
-connect(DATABASE_URL)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((error) => {
-    console.error("Failed to connect to MongoDB:", error);
+    if (!DATABASE_URL) {
+      throw new Error("Environment variable for database URL is not set");
+    }
 
-    process.exit(1);
-  });
+    const app = express();
 
-app.use(protectedRouter);
+    app.use(
+      cors(corsOptions),
+      urlencoded({ extended: true }),
+      cookieParser(COOKIE_PARSER_SECRET),
+      json()
+    );
 
-app.use(router);
+    await connect(DATABASE_URL);
 
-app.listen(3500, () => {
-  console.log("Server running on port 3500");
-});
+    app.use(router);
+
+    app.use(protectedRouter);
+
+    app.listen(3500, () => {
+      console.log("Server running on port 3500");
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error starting server:", error.message);
+    }
+  }
+}
+
+startServer();

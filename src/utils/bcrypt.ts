@@ -7,9 +7,11 @@ export async function compareData(
   try {
     return await bcrypt.compare(data, hashedData);
   } catch (error) {
-    console.error("Error comparing data:", error);
+    if (error instanceof Error) {
+      console.error("Error comparing data by bcrypt:", error.message);
+    }
 
-    throw new Error("Data comparison failed.");
+    return false;
   }
 }
 
@@ -17,8 +19,10 @@ export async function hashData(data: string): Promise<string> {
   try {
     return await bcrypt.hash(data, 10);
   } catch (error) {
-    console.error("Error hashing data:", error);
+    if (error instanceof Error) {
+      console.error("Error hashing data by bcrypt:", error.message);
+    }
 
-    throw new Error("Data hashing failed.");
+    return "";
   }
 }
