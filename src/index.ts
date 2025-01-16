@@ -6,7 +6,6 @@ config();
 import express, { json, urlencoded } from "express";
 import { connect } from "mongoose";
 
-import { corsOptions } from "./config/cors";
 import { protectedRouter } from "./protected-routes";
 import { router } from "./routes";
 
@@ -27,7 +26,7 @@ async function startServer(): Promise<void> {
     const app = express();
 
     app.use(
-      cors(corsOptions),
+      cors(),
       urlencoded({ extended: true }),
       cookieParser(COOKIE_PARSER_SECRET),
       json()

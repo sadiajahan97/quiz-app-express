@@ -1,14 +1,12 @@
 import { CorsOptions } from "cors";
 
-const allowedOrigins = ["http://localhost:3500"];
-
 export const corsOptions: CorsOptions = {
   credentials: true,
   optionsSuccessStatus: 200,
   origin: (origin, callback) => {
     if (
-      (typeof origin === "string" && allowedOrigins.indexOf(origin) !== -1) ||
-      origin === undefined
+      origin === "https://quiz-app-next-kappa.vercel.app/" ||
+      origin === "https://quiz-app-express.onrender.com/"
     ) {
       callback(null, true);
     } else {
