@@ -4,7 +4,7 @@ import { verify } from "jsonwebtoken";
 import { Authentication } from "@quiz-app/types/authentication";
 import { TokenPayload } from "@quiz-app/types/jsonwebtoken";
 
-export function verifyAccessToken(
+export function handleVerifyAccessToken(
   request: Request<unknown, unknown, Authentication>,
   response: Response,
   next: NextFunction
@@ -54,8 +54,6 @@ export function verifyAccessToken(
         message: "Access token has expired",
         status: 401,
       });
-
-      response.redirect("/extend-session");
 
       return;
     }

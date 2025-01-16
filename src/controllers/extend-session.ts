@@ -3,13 +3,12 @@ import { verify } from "jsonwebtoken";
 import { isValidObjectId } from "mongoose";
 
 import { User } from "@quiz-app/models/user";
-import { Authentication } from "@quiz-app/types/authentication";
 import { TokenPayload } from "@quiz-app/types/jsonwebtoken";
 import { compareData } from "@quiz-app/utils/bcrypt";
 import { createAccessToken } from "@quiz-app/utils/jsonwebtoken";
 
-export async function handleExtendSession(
-  request: Request<unknown, unknown, Authentication>,
+export async function handleCreateNewAccessToken(
+  request: Request,
   response: Response
 ): Promise<void> {
   try {
@@ -21,18 +20,6 @@ export async function handleExtendSession(
       );
     }
 
-    const { id } = request.body.authentication;
-
-    if (!isValidObjectId(id)) {
-      response.status(400).json({
-        data: null,
-        message: "Invalid user ID format",
-        status: 400,
-      });
-
-      return;
-    }
-
     const refreshToken = request.signedCookies?.refreshToken;
 
     if (!refreshToken) {
@@ -40,6 +27,21 @@ export async function handleExtendSession(
         data: null,
         message: "Refresh token is missing",
         status: 401,
+      });
+
+      return;
+    }
+
+    const { email, id } = verify(
+      refreshToken,
+      REFRESH_TOKEN_SECRET
+    ) as TokenPayload;
+
+    if (!isValidObjectId(id)) {
+      response.status(400).json({
+        data: null,
+        message: "Invalid user ID format",
+        status: 400,
       });
 
       return;
@@ -69,9 +71,7 @@ export async function handleExtendSession(
       return;
     }
 
-    const decoded = verify(refreshToken, REFRESH_TOKEN_SECRET) as TokenPayload;
-
-    const accessToken = createAccessToken(decoded.email, decoded.id);
+    const accessToken = createAccessToken(email, id);
 
     response.status(200).json({
       data: {
