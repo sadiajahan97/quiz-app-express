@@ -1,0 +1,32 @@
+services:
+  app:
+    depends_on:
+      - databasae
+    image: node:lts-alpine
+    working_dir: /root
+    volumes:
+      - .:/root
+    environment:
+      COOKIE_PARSER_SECRET: c00k13
+      DATABASE_URL: mongodb://databasae:27017/test
+      ACCESS_TOKEN_SECRET: acc355
+      REFRESH_TOKEN_SECRET: r3fr35h
+    ports:
+      - 3500:3500
+    command:
+      - npx
+      - tsx
+      - src
+  databasae:
+    image: mongo
+    volumes:
+      - db:/data/db
+  npm:
+    image: node:lts-alpine
+    working_dir: /root
+    volumes:
+      - .:/root
+    entrypoint:
+      - npm
+volumes:
+  db: ~

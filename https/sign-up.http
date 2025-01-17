@@ -1,0 +1,9 @@
+POST http://127.0.0.1:3500/sign-up
+Content-Type: application/json
+
+{
+    "name": "john doe",
+    "email": "johndoe@example.com",
+    "password": "b3@ut!Fu1",
+    "confirmPassword": "b3@ut!Fu1"
+}

@@ -1,0 +1,7 @@
+POST http://127.0.0.1:3500/sign-in
+Content-Type: application/json
+
+{
+    "email": "johndoe@example.com",
+    "password": "b3@ut!Fu1"
+}
