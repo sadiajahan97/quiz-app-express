@@ -1,16 +1,14 @@
-import { CorsOptions } from "cors";
+import { CorsOptions } from 'cors';
 
 export const corsOptions: CorsOptions = {
-  credentials: true,
-  optionsSuccessStatus: 200,
-  origin: (origin, callback) => {
-    if (
-      origin === "https://quiz-app-next-kappa.vercel.app/" ||
-      origin === "https://quiz-app-express.onrender.com/"
-    ) {
-      callback(null, true);
+  origin: (req, cb) => {
+    const origin = req.header('Origin');
+    if (origin === 'https://quiz-app-next-kappa.vercel.app') {
+      cb(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      cb(new Error('Not allowed by CORS'));
     }
   },
+  credentials: true,
+  optionsSuccessStatus: 200,
 };
